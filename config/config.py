@@ -77,6 +77,9 @@ class ProgressiveExecutionConfig:
     # Reward threshold for acceptance (now binary: must be 1.0)
     acceptance_threshold: float = 1.0
 
+    # Error recovery (Kyungmin's hierarchy)
+    max_syntax_retries: int = 2  # Retry syntax errors up to 2 times
+
 
 @dataclass
 class MultibranchConfig:

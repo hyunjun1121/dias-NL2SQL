@@ -1,6 +1,14 @@
-# LLM APIs
+# LLM APIs (Proprietary)
 anthropic>=0.21.0
 openai>=1.0.0
+
+# Open-source model support (Kyungmin's recommendation)
+# Uncomment based on your deployment:
+# transformers>=4.30.0  # For HuggingFace models
+# torch>=2.0.0  # For local model inference
+# accelerate>=0.20.0  # For model loading
+# ollama-python>=0.1.0  # For Ollama local deployment
+# vllm uses OpenAI-compatible API (already included above)
 
 # SQL parsing and execution
 sqlparse>=0.4.4

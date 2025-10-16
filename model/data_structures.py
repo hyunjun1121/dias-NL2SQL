@@ -370,6 +370,7 @@ class PipelineOutput:
     total_time: float
     num_iterations: int
     num_branches_explored: int
+    ir_artifacts: Optional[Dict[str, Any]] = None
 
     def to_dict(self) -> Dict:
         """Convert to dictionary."""
@@ -385,5 +386,6 @@ class PipelineOutput:
             'execution_success': self.execution_success,
             'total_time': self.total_time,
             'num_iterations': self.num_iterations,
-            'num_branches_explored': self.num_branches_explored
+            'num_branches_explored': self.num_branches_explored,
+            'ir_artifacts': self.ir_artifacts
         }

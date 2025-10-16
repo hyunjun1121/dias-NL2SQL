@@ -180,3 +180,12 @@ Research implementation for EPFL triple kim's NL2SQL project.
 ## License
 
 Academic research purposes.
+
+## IR Evaluation Scripts
+
+- Table-level (Spider 2.0): `scripts/eval_ir_spider.py`
+- Column-level (Spider 2.0): `scripts/eval_ir_spider_columns.py`
+  - Modes: `--mode_variant strict|lenient` (strict: 엄밀 / lenient: 관대)
+- Value/Context support: `scripts/eval_ir_value_context.py`
+
+See `docs/IR_EVAL_SP2.md`, `docs/IR_EVAL_STRICT_LENIENT.md` for details.

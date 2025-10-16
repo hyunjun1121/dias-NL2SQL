@@ -25,6 +25,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 from ir.ir_integration import run_ir_and_prune
+import sqlglot
 
 
 def load_samples(path: Path) -> List[Dict[str, Any]]:
@@ -61,26 +62,79 @@ def gold_columns_from_dataset(sample: Dict[str, Any]) -> Optional[Dict[str, Set[
     return None
 
 
-def gold_columns_from_sql(dbm, sql: str) -> Dict[str, Set[str]]:
-    # Use DatabaseManager's helpers to extract table->columns mapping
+def _alias_map_from_ast(node) -> Dict[str, str]:
+    alias_map: Dict[str, str] = {}
+    try:
+        for t in node.find_all(sqlglot.exp.Table):
+            real = t.name if hasattr(t, "name") else None
+            al = t.alias_or_name if hasattr(t, "alias_or_name") else None
+            if real and al:
+                alias_map[str(al).lower()] = str(real)
+    except Exception:
+        pass
+    return alias_map
+
+
+def gold_columns_from_sql(dbm, sql: str, variant: str = "lenient") -> Dict[str, Set[str]]:
+    """Extract gold columns from SQL with strict/lenient handling.
+
+    - Base: use DatabaseManager.get_sql_columns_dict
+    - Star expansion: expand to referenced tables' full columns
+    - Strict: unqualified columns assigned only if single referenced table; use AST to unwrap functions/aliases
+    - Lenient: unqualified columns assigned to all referenced tables
+    """
     mapping: Dict[str, Set[str]] = {}
     try:
         table_to_cols = dbm.get_sql_columns_dict(sql=sql) or {}
         for table, cols in table_to_cols.items():
             mapping.setdefault(str(table), set()).update({str(c) for c in cols})
-        # Expand wildcard (*) by enumerating columns of referenced tables
+        # Collect referenced tables
         try:
             tables_list = dbm.get_sql_tables(sql=sql) or []
         except Exception:
             tables_list = []
-        wildcard = False
-        if "*" in [c for cols in table_to_cols.values() for c in cols]:
-            wildcard = True
+        # Expand wildcard
+        wildcard = "*" in [c for cols in table_to_cols.values() for c in cols]
         if wildcard and tables_list:
-            full_schema = dbm.get_db_schema() or {}
+            full = dbm.get_db_schema() or {}
             for t in tables_list:
-                cols = full_schema.get(t, [])
+                cols = full.get(t, [])
                 mapping.setdefault(str(t), set()).update({str(c) for c in cols})
+
+        # AST refinement (unwrap functions / aliases)
+        try:
+            node = sqlglot.parse_one(sql)
+            alias_map = _alias_map_from_ast(node)
+            referenced = set(str(x) for x in tables_list)
+            # Gather columns from AST
+            col_nodes = list(node.find_all(sqlglot.exp.Column))
+            for cn in col_nodes:
+                col_name = str(cn.name) if hasattr(cn, "name") else None
+                tbl = None
+                try:
+                    t = cn.table
+                    tbl = str(t) if t else None
+                except Exception:
+                    tbl = None
+                if not col_name:
+                    continue
+                if tbl:
+                    # Resolve alias if any
+                    real_tbl = alias_map.get(tbl.lower(), tbl)
+                    mapping.setdefault(real_tbl, set()).add(col_name)
+                else:
+                    # Unqualified
+                    if variant == "strict":
+                        if len(referenced) == 1:
+                            only_tbl = list(referenced)[0]
+                            mapping.setdefault(only_tbl, set()).add(col_name)
+                        # else: ignore
+                    else:
+                        # lenient: assign to all referenced tables
+                        for rt in referenced:
+                            mapping.setdefault(rt, set()).add(col_name)
+        except Exception:
+            pass
     except Exception:
         pass
     return mapping
@@ -126,6 +180,8 @@ def main():
     ap.add_argument("--mode", type=str, default="dev")
     ap.add_argument("--output", type=str, default="results/ir_eval_spider_columns.json")
     ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--mode_variant", type=str, choices=["strict", "lenient"], default="lenient",
+                    help="Column extraction/matching strictness for gold SQL parsing")
 
     # IR knobs
     ap.add_argument("--ir_template", type=str, default="extract_keywords")
@@ -156,7 +212,7 @@ def main():
         gt_map = gold_columns_from_dataset(s)
         if gt_map is None:
             sql = s.get("SQL") or s.get("query") or s.get("gold_sql") or ""
-            gt_map = gold_columns_from_sql(dbm, sql)
+            gt_map = gold_columns_from_sql(dbm, sql, variant=args.mode_variant)
         gold_pairs = normalize_pairs(gt_map)
 
         # IR retrieved columns (from pruned schema)
@@ -222,4 +278,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

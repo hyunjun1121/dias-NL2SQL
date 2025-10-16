@@ -1,4 +1,4 @@
-# EPFL Hyunjun's NL2SQL Pipeline
+# EPFL triple kim's NL2SQL Pipeline
 
 Research implementation based on Kyungmin's direction:
 **"Agent Pipeline with Reward Design - Confident Sub-task Progressive Execution"**
@@ -111,7 +111,7 @@ beam_size: 5
 ## Project Structure
 
 ```
-EPFL_hyunjun/
+EPFL_triple kim/
 ├── config/
 │   └── config.py              # Configuration
 ├── model/
@@ -175,7 +175,7 @@ See `remaining_tasks.md` for:
 
 ## Citation
 
-Research implementation for EPFL Hyunjun's NL2SQL project.
+Research implementation for EPFL triple kim's NL2SQL project.
 
 ## License
 

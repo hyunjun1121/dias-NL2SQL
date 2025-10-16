@@ -131,6 +131,22 @@ class BenchmarkConfig:
 
 
 @dataclass
+class IRConfig:
+    """Configuration for CHESS-style Information Retriever integration."""
+
+    enabled: bool = True
+    db_root_path: Optional[str] = "benchmark"
+    data_mode: str = "dev"
+
+    extract_keywords_template: str = "extract_keywords"
+    extract_keywords_engine: str = "gpt-4o-mini"
+    extract_keywords_temperature: float = 0.2
+    extract_keywords_parser: str = "python_list_output_parser"
+
+    retrieve_context_top_k: int = 5
+
+
+@dataclass
 class EPFLHyunjunConfig:
     """Main configuration for EPFL Hyunjun's pipeline."""
 
@@ -143,6 +159,7 @@ class EPFLHyunjunConfig:
     multibranch: MultibranchConfig = field(default_factory=MultibranchConfig)
     error_analysis: ErrorAnalysisConfig = field(default_factory=ErrorAnalysisConfig)
     benchmark: BenchmarkConfig = field(default_factory=BenchmarkConfig)
+    ir: IRConfig = field(default_factory=IRConfig)
 
     # Paths
     output_dir: str = "outputs"
@@ -164,6 +181,7 @@ class EPFLHyunjunConfig:
             'multibranch': self.multibranch.__dict__,
             'error_analysis': self.error_analysis.__dict__,
             'benchmark': self.benchmark.__dict__,
+            'ir': self.ir.__dict__,
             'output_dir': self.output_dir,
             'cache_dir': self.cache_dir,
             'database_dir': self.database_dir,

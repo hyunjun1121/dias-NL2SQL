@@ -1,8 +1,9 @@
 """
 Main Pipeline Orchestrator.
-Kyungmin's design: Agent Pipeline with Reward-driven Progressive Execution.
+Triple Kim's design: Agent Pipeline with Reward-driven Progressive Execution.
 """
 
+import os
 import time
 from typing import Dict
 from model.data_structures import PipelineOutput, BranchCollection, Branch
@@ -13,6 +14,7 @@ from model.semantic_reward import SemanticRewardModel
 from evaluation.error_analyzer import ErrorAnalyzer
 from utils.llm_client import LLMClient
 from utils.database_executor import DatabaseExecutor
+from ir.ir_integration import run_ir_and_prune
 
 
 class EPFLHyunjunPipeline:
@@ -75,6 +77,24 @@ class EPFLHyunjunPipeline:
         # Initialize database executor
         db_executor = DatabaseExecutor(db_path)
 
+        # Derive db_id for IR (filename without extension)
+        db_id = os.path.splitext(os.path.basename(db_path))[0]
+
+        ir_artifacts = None
+        if getattr(self.config, 'ir', None) and self.config.ir.enabled:
+            pruned_schema, ir_artifacts = run_ir_and_prune(
+                question=nl_query,
+                db_id=db_id,
+                data_mode=self.config.ir.data_mode,
+                db_root_path=self.config.ir.db_root_path,
+                extract_keywords_template=self.config.ir.extract_keywords_template,
+                extract_keywords_engine=self.config.ir.extract_keywords_engine,
+                extract_keywords_temperature=self.config.ir.extract_keywords_temperature,
+                extract_keywords_parser=self.config.ir.extract_keywords_parser,
+                retrieve_context_top_k=self.config.ir.retrieve_context_top_k,
+            )
+            schema = pruned_schema
+
         # Initialize progressive executor
         progressive_executor = ProgressiveExecutor(
             self.llm_client,
@@ -136,7 +156,8 @@ class EPFLHyunjunPipeline:
             execution_success=final_result['success'],
             total_time=total_time,
             num_iterations=len(context.completed_tasks),
-            num_branches_explored=1
+            num_branches_explored=1,
+            ir_artifacts=ir_artifacts
         )
 
         return output

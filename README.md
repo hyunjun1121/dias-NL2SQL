@@ -1,4 +1,4 @@
-# EPFL triple kim's NL2SQL Pipeline
+# EPFL Triple Kim NL2SQL Pipeline
 
 Research implementation based on Kyungmin's direction:
 **"Agent Pipeline with Reward Design - Confident Sub-task Progressive Execution"**
@@ -21,15 +21,9 @@ Research implementation based on Kyungmin's direction:
 - Each sub-task builds on previous results
 
 ### 3. Semantic Reward Model
-- **60% Semantic Correctness** (most important!)
-- 20% Execution Success
-- 20% Efficiency
-- Focus: Meaning matters, syntax doesn't
+- Execution success gate + constraint verification + LLM semantic judgment
 
-### 4. Multi-branch Reasoning
-- When error detected, create alternative branches
-- MS rStar style beam search
-- Select best branch by reward
+### 4. Multi-branch Reasoning (Future)\n- Beam-style exploration is a planned extension; current code runs single-branch
 
 ## Architecture
 
@@ -111,22 +105,20 @@ beam_size: 5
 ## Project Structure
 
 ```
-EPFL_triple kim/
+EPFL_hyunjun/
 ├── config/
 │   └── config.py              # Configuration
 ├── model/
 │   ├── data_structures.py     # Core data structures
 │   ├── subtask_extractor.py   # Confident sub-task extraction
 │   ├── query_plan_generator.py # CHASE-SQL style query plan
-│   ├── semantic_reward.py     # Reward model (60/20/20)
+│   ├── semantic_reward.py     # Reward model (execution + constraints + LLM)
 │   ├── progressive_executor.py # Progressive execution
-│   └── multibranch_reasoner.py # Multi-branch reasoning
-├── pipeline/
+│   └── ├── pipeline/
 │   └── main_pipeline.py       # Main orchestrator
 ├── evaluation/
 │   ├── error_analyzer.py      # Semantic error analysis
-│   └── bird_evaluator.py      # BIRD benchmark
-├── utils/
+│   └── ├── utils/
 │   ├── llm_client.py          # LLM API client
 │   └── database_executor.py   # SQL execution
 ├── scripts/
@@ -189,3 +181,4 @@ Academic research purposes.
 - Value/Context support: `scripts/eval_ir_value_context.py`
 
 See `docs/IR_EVAL_SP2.md`, `docs/IR_EVAL_STRICT_LENIENT.md` for details.
+

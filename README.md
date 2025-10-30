@@ -182,3 +182,97 @@ Academic research purposes.
 
 See `docs/IR_EVAL_SP2.md`, `docs/IR_EVAL_STRICT_LENIENT.md` for details.
 
+
+## Configuration (Detailed)
+
+Edit `config/config.py` (key fields):
+
+```python
+# Information Retriever (CHESS)
+ir.enabled = True
+ir.db_root_path = "benchmark"      # EPFL_hyunjun/benchmark (CHESS layout)
+ir.data_mode = "dev"               # dev/test/train
+ir.extract_keywords_template = "extract_keywords"
+ir.extract_keywords_engine = "gpt-4o-mini"
+ir.extract_keywords_temperature = 0.2
+ir.extract_keywords_parser = "python_list_output_parser"
+ir.retrieve_context_top_k = 5
+
+# Sub-task extraction
+subtask.high_confidence_threshold = 0.85
+
+# Progressive execution
+progressive_execution.max_iterations = 10
+progressive_execution.acceptance_threshold = 1.0
+
+# Multi-branch (planned; current code runs single-branch)
+multibranch.enable_multibranch = True
+multibranch.num_alternatives = 3
+multibranch.beam_size = 5
+```
+
+Note: Runner requires both `--data_path` (dataset json) and `--db_path` (root of databases). The earlier minimal example omitted these flags.
+
+## Run Examples
+
+### BIRD (dev)
+
+```bash
+export OPENAI_API_KEY=your_key
+
+python scripts/run_pipeline.py \
+  --dataset bird \
+  --data_path <path_to_bird>/dev.json \
+  --db_path   <path_to_bird_databases_root> \
+  --split dev \
+  --output results_bird_dev.json \
+  --limit 100
+```
+
+### Spider 2.0 (dev)
+
+```bash
+export OPENAI_API_KEY=your_key
+
+python scripts/run_pipeline.py \
+  --dataset spider \
+  --data_path <path_to_spider2>/dev.json \
+  --db_path   <path_to_spider2_databases_root> \
+  --split dev \
+  --output results_spider2_dev.json \
+  --limit 100
+```
+
+## Architecture (Updated)
+
+```
+NL Query + Schema
+       ↓
+────────────────────────────────────────────────────────────────────────────
+ 0.5 CHESS IR (deterministic)
+   - ExtractKeywords / RetrieveEntity / RetrieveContext
+   - Pruned schema + examples + descriptions
+────────────────────────────────────────────────────────────────────────────
+       ↓
+────────────────────────────────────────────────────────────────────────────
+ 1. Confident Sub-task Extraction
+   - LLM-generated tasks with confidence/dependencies
+────────────────────────────────────────────────────────────────────────────
+       ↓
+────────────────────────────────────────────────────────────────────────────
+ 2. Query Plan Generation (CHASE-SQL style)
+   - Tables → Operations → Final projection
+────────────────────────────────────────────────────────────────────────────
+       ↓
+────────────────────────────────────────────────────────────────────────────
+ 3. Progressive Execution
+   - Execute → Evaluate → Accumulate (iteration)
+────────────────────────────────────────────────────────────────────────────
+       ↓
+────────────────────────────────────────────────────────────────────────────
+ 4. Semantic Reward Evaluation
+   - Execution success → Constraint check → LLM semantic judgment
+────────────────────────────────────────────────────────────────────────────
+       ↓
+   Final SQL
+```

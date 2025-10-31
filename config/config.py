@@ -22,6 +22,7 @@ class LLMConfig:
 @dataclass
 class SubTaskConfig:
     """Configuration for sub-task extraction."""
+    model_name: Optional[str] = "Qwen/Qwen3-235B-A22B-Thinking-2507-FP8"
     # LLM generates confidence directly
     use_llm_confidence: bool = True
 
@@ -38,6 +39,7 @@ class SubTaskConfig:
 @dataclass
 class QueryPlanConfig:
     """Configuration for query plan generation (CHASE-SQL style)."""
+    model_name: Optional[str] = "Qwen/Qwen3-235B-A22B-Thinking-2507-FP8"
     # Human-readable 3-step reasoning
     use_three_step_reasoning: bool = True
 
@@ -57,6 +59,7 @@ class SemanticRewardConfig:
     2. Semantic Correctness (LLM binary judgment)
     No efficiency metric - focus on correctness only.
     """
+    model_name: Optional[str] = "Qwen/Qwen3-235B-A22B-Instruct-2507-FP8"
     # LLM settings for semantic judgment
     judgment_temperature: float = 0.0
     judgment_max_tokens: int = 512
@@ -65,6 +68,7 @@ class SemanticRewardConfig:
 @dataclass
 class ProgressiveExecutionConfig:
     """Configuration for progressive execution."""
+    sql_model_name: Optional[str] = "Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8"
     # Execute highest confidence task first
     sort_by_confidence: bool = True
 

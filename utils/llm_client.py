@@ -18,8 +18,8 @@ class LLMClient:
     Supported backends:
     - 'gpt-4o', 'gpt-4o-mini': OpenAI API
     - 'claude-3.5-sonnet': Anthropic API
-    - 'deepseek-r1', 'qwen2.5', 'llama-3.3': vLLM cluster
-    - 'hf:{model_path}': HuggingFace Transformers
+    - 'qwen3-* (via HF inference)', 'deepseek-r1', 'llama-3.3': vLLM or HF
+    - 'hf:{model_path}': HuggingFace Transformers (local)
     - 'ollama:{model}': Ollama local
     - 'cluster:{endpoint}': Custom cluster endpoint
     """
@@ -44,6 +44,12 @@ class LLMClient:
             return "openai"
         elif "claude" in model_lower:
             return "anthropic"
+        elif model_lower.startswith("qwen/qwen3-") or model_lower in {
+            "qwen3-235b-a22b-thinking-2507-fp8",
+            "qwen3-235b-a22b-instruct-2507-fp8",
+            "qwen3-coder-480b-a35b-instruct-fp8"
+        }:
+            return "hf_inference"
         elif any(x in model_lower for x in ["deepseek", "qwen", "llama", "mistral"]):
             return "vllm"  # vLLM cluster
         elif model_lower.startswith("hf:"):
@@ -78,6 +84,12 @@ class LLMClient:
             import openai
             base_url = self.base_url or os.getenv("VLLM_BASE_URL", "http://localhost:8000/v1")
             return openai.OpenAI(api_key="EMPTY", base_url=base_url)
+
+        elif self.backend == "hf_inference":
+            from huggingface_hub import InferenceClient
+
+            token = os.getenv("HUGGINGFACEHUB_API_TOKEN")
+            return InferenceClient(model=self.model_name, token=token)
 
         elif self.backend == "transformers":
             # HuggingFace Transformers - load model locally
@@ -169,6 +181,19 @@ class LLMClient:
                 max_tokens=max_tokens
             )
             return response.choices[0].message.content
+
+        elif self.backend == "hf_inference":
+            full_prompt = prompt
+            if system_prompt:
+                full_prompt = f"{system_prompt}\n\n{prompt}"
+            response = self.client.text_generation(
+                prompt=full_prompt,
+                max_new_tokens=max_tokens,
+                temperature=temperature,
+                do_sample=temperature > 0,
+                repetition_penalty=1.05
+            )
+            return response.strip()
 
         elif self.backend == "transformers":
             # HuggingFace Transformers local generation

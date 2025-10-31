@@ -5,7 +5,7 @@ Triple Kim's design: Agent Pipeline with Reward-driven Progressive Execution.
 
 import os
 import time
-from typing import Dict
+from typing import Dict, Optional
 from model.data_structures import PipelineOutput, BranchCollection, Branch
 from model.subtask_extractor import ConfidentSubTaskExtractor
 from model.query_plan_generator import QueryPlanGenerator
@@ -19,33 +19,40 @@ from ir.ir_integration import run_ir_and_prune
 
 class EPFLHyunjunPipeline:
     """
-    Main pipeline implementing Kyungmin's vision:
+    Main pipeline implementing Triple Kim's vision:
     - Confident sub-task extraction
     - Progressive execution with context accumulation
     - Semantic reward-driven approach
     """
 
+    def _create_llm_client(self, model_override: Optional[str]) -> LLMClient:
+        model_name = model_override or self.config.llm.model_name
+        return LLMClient(
+            model_name=model_name,
+            api_key=self.config.llm.api_key
+        )
+
     def __init__(self, config):
         self.config = config
 
-        # Initialize components
-        self.llm_client = LLMClient(
-            model_name=config.llm.model_name,
-            api_key=config.llm.api_key
-        )
+        # Initialize stage-specific LLM clients
+        self.subtask_llm = self._create_llm_client(config.subtask.model_name)
+        self.plan_llm = self._create_llm_client(config.query_plan.model_name)
+        self.sql_llm = self._create_llm_client(config.progressive_execution.sql_model_name)
+        self.reward_llm = self._create_llm_client(config.semantic_reward.model_name)
 
         self.subtask_extractor = ConfidentSubTaskExtractor(
-            self.llm_client,
+            self.subtask_llm,
             config.subtask.__dict__
         )
 
         self.query_plan_generator = QueryPlanGenerator(
-            self.llm_client,
+            self.plan_llm,
             config.query_plan.__dict__
         )
 
         self.reward_model = SemanticRewardModel(
-            self.llm_client,
+            self.reward_llm,
             config.semantic_reward.__dict__
         )
 
@@ -97,7 +104,7 @@ class EPFLHyunjunPipeline:
 
         # Initialize progressive executor
         progressive_executor = ProgressiveExecutor(
-            self.llm_client,
+            self.sql_llm,
             db_executor,
             self.reward_model,
             self.config.progressive_execution.__dict__

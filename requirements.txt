@@ -15,7 +15,7 @@ sqlparse>=0.4.4
 sqlglot>=20.0.0
 
 # Database connectors
-psycopg2>=2.9.0
+psycopg2-binary>=2.9.0
 mysql-connector-python>=8.0.0
 
 # Data processing

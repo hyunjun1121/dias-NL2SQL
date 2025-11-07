@@ -7,6 +7,13 @@ import sys
 from pathlib import Path
 from typing import Dict, Any, Tuple
 
+# Use pysqlite3 for ChromaDB compatibility (requires SQLite >= 3.35.0)
+try:
+    import pysqlite3
+    sys.modules['sqlite3'] = pysqlite3
+except ImportError:
+    pass  # Fall back to system sqlite3 if pysqlite3 is not available
+
 
 def _ensure_chess_src_on_path() -> Path:
     """Ensure CHESS/src is importable and return the path."""

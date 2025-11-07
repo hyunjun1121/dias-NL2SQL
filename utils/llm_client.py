@@ -40,6 +40,12 @@ class LLMClient:
         """Detect which backend to use."""
         model_lower = self.model_name.lower()
 
+        # Explicit backends must be detected first to avoid false matches (e.g., 'ollama:qwen*')
+        if model_lower.startswith("ollama:"):
+            return "ollama"
+        if model_lower.startswith("hf:"):
+            return "transformers"
+
         if "gpt" in model_lower:
             return "openai"
         elif "claude" in model_lower:
@@ -52,10 +58,6 @@ class LLMClient:
             return "hf_inference"
         elif any(x in model_lower for x in ["deepseek", "qwen", "llama", "mistral"]):
             return "vllm"  # vLLM cluster
-        elif model_lower.startswith("hf:"):
-            return "transformers"
-        elif model_lower.startswith("ollama:"):
-            return "ollama"
         elif model_lower.startswith("cluster:"):
             return "cluster"
         else:

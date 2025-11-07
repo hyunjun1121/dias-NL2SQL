@@ -31,7 +31,7 @@
 3. IR 산출물(`ir_artifacts`)은 최종 결과물에 저장되어 향후 분석 또는 프롬프트 강화 단계에서 활용 가능하다.
 
 ## Required Preparation
-1. Benchmark 압축 해제: `benchmark/bird.zip`, `benchmark/Spider2.zip`을 해제하여 `<benchmark>/<dataset>` 구조로 구성한다.
+1. Benchmark 압축 해제: `data/bird.zip`, `data/Spider2.zip`을 해제하여 `./data/<dataset>` 구조로 구성한다.
 2. CHESS 전처리(`../CHESS/src/preprocess.py`)를 실행하여 각 데이터베이스에 대해 MinHash LSH(`preprocessed/*.pkl`)와 Chroma Vector DB(`context_vector_db/`)를 생성한다.
 3. OpenAI Embeddings `text-embedding-3-small` 사용을 위한 `OPENAI_API_KEY` 환경 변수 설정.
 

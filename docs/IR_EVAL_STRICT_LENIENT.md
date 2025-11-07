@@ -19,7 +19,7 @@
 ```bash
 python scripts/eval_ir_spider_columns.py \
   --spider_json <path>/dev.json \
-  --db_root_path benchmark \
+  --db_root_path ./data \
   --mode dev \
   --output results/ir_eval_spider_columns_dev.json \
   --mode_variant strict   # 또는 lenient (기본)

@@ -22,7 +22,7 @@
 ```bash
 python scripts/eval_ir_spider.py \
   --spider_json <path>/dev.json \
-  --db_root_path benchmark \
+  --db_root_path ./data \
   --mode dev \
   --output results/ir_eval_spider_dev.json \
   --limit 200
@@ -56,5 +56,5 @@ python scripts/eval_ir_spider.py \
 ```
 
 ## Notes
-- 평가 전제: CHESS 전처리(LSH/Chroma) 완료, `OPENAI_API_KEY` 설정, `benchmark` 경로가 올바르게 구성되어야 한다.
+- 평가 전제: CHESS 전처리(LSH/Chroma) 완료, `OPENAI_API_KEY` 설정, `./data` 경로가 올바르게 구성되어야 한다.
 - Spider 2.0의 table ground-truth가 없는 샘플은 fallback(SQL parse)로 대체된다.

@@ -231,6 +231,13 @@ class LLMClient:
                     "num_predict": max_tokens
                 }
             )
-            return response['response']
+            # Handle both regular response and thinking mode
+            response_text = response.get('response', '') if isinstance(response, dict) else getattr(response, 'response', '')
+            thinking_text = response.get('thinking', '') if isinstance(response, dict) else getattr(response, 'thinking', '')
+
+            # If response is empty but thinking exists, use thinking
+            if not response_text and thinking_text:
+                return thinking_text
+            return response_text
 
         raise ValueError(f"Unsupported backend: {self.backend}")

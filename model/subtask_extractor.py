@@ -180,6 +180,12 @@ Respond with JSON only.
                 response = response[:-3]
             response = response.strip()
 
+            # Try to extract JSON from thinking mode text
+            import re
+            json_match = re.search(r'\{.*"subtasks".*\}', response, re.DOTALL)
+            if json_match:
+                response = json_match.group(0)
+
             data = json.loads(response)
             subtasks = data.get('subtasks', [])
 

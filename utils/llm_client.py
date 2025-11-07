@@ -235,9 +235,11 @@ class LLMClient:
             response_text = response.get('response', '') if isinstance(response, dict) else getattr(response, 'response', '')
             thinking_text = response.get('thinking', '') if isinstance(response, dict) else getattr(response, 'thinking', '')
 
-            # If response is empty but thinking exists, use thinking
-            if not response_text and thinking_text:
+            # Prefer response field, use thinking only if response is truly empty
+            if response_text:
+                return response_text
+            elif thinking_text:
                 return thinking_text
-            return response_text
+            return ""
 
         raise ValueError(f"Unsupported backend: {self.backend}")

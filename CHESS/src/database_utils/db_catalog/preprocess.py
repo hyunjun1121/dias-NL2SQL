@@ -3,7 +3,7 @@ from pathlib import Path
 import logging
 from dotenv import load_dotenv
 from langchain_chroma import Chroma
-from langchain.schema.document import Document
+from langchain_core.documents import Document
 from langchain_openai import OpenAIEmbeddings
 from langchain_google_vertexai import VertexAIEmbeddings
 from google.oauth2 import service_account

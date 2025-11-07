@@ -13,7 +13,7 @@ from typing import Dict, Optional
 @dataclass
 class LLMConfig:
     """LLM configuration."""
-    model_name: str = "ollama:qwen3:32b"
+    model_name: str = "ollama:qwen3:8b"
     temperature: float = 0.0
     max_tokens: int = 4096
     api_key: Optional[str] = None
@@ -22,7 +22,7 @@ class LLMConfig:
 @dataclass
 class SubTaskConfig:
     """Configuration for sub-task extraction."""
-    model_name: Optional[str] = "ollama:qwen3:32b"
+    model_name: Optional[str] = "ollama:qwen3:8b"
     # LLM generates confidence directly
     use_llm_confidence: bool = True
 
@@ -39,7 +39,7 @@ class SubTaskConfig:
 @dataclass
 class QueryPlanConfig:
     """Configuration for query plan generation (CHASE-SQL style)."""
-    model_name: Optional[str] = "ollama:qwen3:32b"
+    model_name: Optional[str] = "ollama:qwen3:8b"
     # Human-readable 3-step reasoning
     use_three_step_reasoning: bool = True
 
@@ -59,7 +59,7 @@ class SemanticRewardConfig:
     2. Semantic Correctness (LLM binary judgment)
     No efficiency metric - focus on correctness only.
     """
-    model_name: Optional[str] = "ollama:qwen3:32b"
+    model_name: Optional[str] = "ollama:qwen3:8b"
     # LLM settings for semantic judgment
     judgment_temperature: float = 0.0
     judgment_max_tokens: int = 512
@@ -68,7 +68,7 @@ class SemanticRewardConfig:
 @dataclass
 class ProgressiveExecutionConfig:
     """Configuration for progressive execution."""
-    sql_model_name: Optional[str] = "ollama:qwen3:32b"
+    sql_model_name: Optional[str] = "ollama:qwen3:8b"
     # Execute highest confidence task first
     sort_by_confidence: bool = True
 

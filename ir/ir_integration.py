@@ -9,15 +9,30 @@ from typing import Dict, Any, Tuple
 
 
 def _ensure_chess_src_on_path() -> Path:
-    """Ensure ../CHESS/src is importable and return the path."""
+    """Ensure CHESS/src is importable and return the path."""
     here = Path(__file__).resolve()
-    repo_root = here.parents[2]
-    chess_src = repo_root / "CHESS" / "src"
-    if not chess_src.exists():
-        raise RuntimeError(f"Unable to locate CHESS/src at {chess_src}")
-    if str(chess_src) not in sys.path:
-        sys.path.insert(0, str(chess_src))
-    return chess_src
+    repo_root = here.parents[1]  # dias-NL2SQL root
+    legacy_root = here.parents[2]  # original expectation (/home/USER)
+
+    env_override = os.getenv("CHESS_SRC_PATH")
+    candidates = []
+    if env_override:
+        candidates.append(Path(env_override))
+    candidates.extend([
+        repo_root / "CHESS" / "src",
+        legacy_root / "CHESS" / "src",
+    ])
+
+    for chess_src in candidates:
+        if chess_src.exists():
+            if str(chess_src) not in sys.path:
+                sys.path.insert(0, str(chess_src))
+            return chess_src
+
+    raise RuntimeError(
+        "Unable to locate CHESS/src. Looked in: "
+        + ", ".join(str(p) for p in candidates)
+    )
 
 
 _ensure_chess_src_on_path()

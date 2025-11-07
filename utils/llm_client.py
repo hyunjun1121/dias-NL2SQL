@@ -31,9 +31,9 @@ class LLMClient:
         base_url: Optional[str] = None  # For cluster endpoints
     ):
         self.model_name = model_name
-        self.api_key = api_key or self._get_api_key()
         self.base_url = base_url
         self.backend = self._detect_backend()
+        self.api_key = api_key or self._get_api_key()
         self.client = self._initialize_client()
 
     def _detect_backend(self) -> str:

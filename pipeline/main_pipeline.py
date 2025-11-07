@@ -14,7 +14,14 @@ from model.semantic_reward import SemanticRewardModel
 from evaluation.error_analyzer import ErrorAnalyzer
 from utils.llm_client import LLMClient
 from utils.database_executor import DatabaseExecutor
-from ir.ir_integration import run_ir_and_prune
+
+# Conditional import for IR (only if needed)
+try:
+    from ir.ir_integration import run_ir_and_prune
+    IR_AVAILABLE = True
+except Exception:
+    IR_AVAILABLE = False
+    run_ir_and_prune = None
 
 
 class EPFLHyunjunPipeline:
@@ -88,7 +95,7 @@ class EPFLHyunjunPipeline:
         db_id = os.path.splitext(os.path.basename(db_path))[0]
 
         ir_artifacts = None
-        if getattr(self.config, 'ir', None) and self.config.ir.enabled:
+        if getattr(self.config, 'ir', None) and self.config.ir.enabled and IR_AVAILABLE:
             pruned_schema, ir_artifacts = run_ir_and_prune(
                 question=nl_query,
                 db_id=db_id,

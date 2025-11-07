@@ -86,13 +86,15 @@ def main():
             )
 
             # Save result
+            semantic_score = float(output.semantic_correctness.is_correct) if output.semantic_correctness else 0.0
+
             result = {
                 'question': example['question'],
                 'db_id': db_id,
                 'predicted_sql': output.final_sql,
                 'gold_sql': example.get('SQL', example.get('query')),
                 'execution_success': output.execution_success,
-                'semantic_correctness': output.semantic_correctness.overall_score,
+                'semantic_correctness': semantic_score,
                 'total_reward': output.total_reward,
                 'execution_time': output.total_time,
                 'num_iterations': output.num_iterations
@@ -102,7 +104,7 @@ def main():
 
             print(f"  Predicted SQL: {output.final_sql}")
             print(f"  Execution: {'SUCCESS' if output.execution_success else 'FAILED'}")
-            print(f"  Semantic Correctness: {output.semantic_correctness.overall_score:.2%}")
+            print(f"  Semantic Correctness: {semantic_score:.2%}")
             print(f"  Total Reward: {output.total_reward:.3f}")
 
         except Exception as e:

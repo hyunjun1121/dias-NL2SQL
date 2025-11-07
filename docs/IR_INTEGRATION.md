@@ -38,7 +38,7 @@
 ## Configuration Snippet
 ```python
 ir.enabled = True
-ir.db_root_path = "benchmark"
+ir.db_root_path = "./data"
 ir.data_mode = "dev"
 ir.extract_keywords_template = "extract_keywords"
 ir.extract_keywords_engine = "gpt-4o-mini"

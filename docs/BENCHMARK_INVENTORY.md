@@ -4,13 +4,13 @@ This note describes the expected benchmark layout for BIRD and Spider 2.0, how i
 
 ## Expected Locations
 
-- Root (EPFL): `EPFL_hyunjun/benchmark/`
+- Root (EPFL): `EPFL_hyunjun/data/`
 - Archives expected (not tracked by Git):
-  - `benchmark/bird.zip`
-  - `benchmark/Spider2.zip`
+  - `data/bird.zip`
+  - `data/Spider2.zip`
 - After extraction (example):
-  - `benchmark/bird/`
-  - `benchmark/Spider2/`
+  - `data/bird/`
+  - `data/Spider2/`
 
 ## CHESS Layout Requirements
 
@@ -27,7 +27,7 @@ For IR preprocessing (MinHash LSH + Chroma Vector DB), data should be arranged p
 ```
 
 Recommended EPFL settings:
-- `DB_ROOT_PATH = EPFL_hyunjun/benchmark`
+- `DB_ROOT_PATH = EPFL_hyunjun/data`
 - `mode = dev` (for development runs)
 
 ## Spider 2.0 Ground Truth Tables
@@ -41,12 +41,12 @@ A small evaluation harness can compare CHESS IR artifacts (`similar_columns`, `s
 
 ## Current Workspace Scan (auto-generated status)
 
-- Archives found: none detected under `EPFL_hyunjun/benchmark/` at authoring time.
-- Action: place `bird.zip` and `Spider2.zip` under `EPFL_hyunjun/benchmark/` and extract them:
+- Archives found: none detected under `EPFL_hyunjun/data/` at authoring time.
+- Action: place `bird.zip` and `Spider2.zip` under `EPFL_hyunjun/data/` and extract them:
 
 ```powershell
 # From EPFL_hyunjun/
-$bench = Join-Path (Get-Location) 'benchmark'
+$bench = Join-Path (Get-Location) 'data'
 Expand-Archive -Force -LiteralPath (Join-Path $bench 'bird.zip') -DestinationPath (Join-Path $bench 'bird')
 Expand-Archive -Force -LiteralPath (Join-Path $bench 'Spider2.zip') -DestinationPath (Join-Path $bench 'Spider2')
 ```
@@ -56,7 +56,7 @@ Then reorganize into CHESS layout and run preprocessing:
 ```bash
 # Example: CHESS preprocessing (from ../CHESS)
 python src/preprocess.py \
-  --db_root_directory "<absolute path>/EPFL_hyunjun/benchmark/dev_databases" \
+  --db_root_directory "<absolute path>/EPFL_hyunjun/data/dev_databases" \
   --db_id all --use_value_description True --signature_size 20 --n_gram 3 --threshold 0.01
 ```
 
@@ -73,4 +73,4 @@ python src/preprocess.py \
 ## Notes
 
 - Large archives are excluded by `.gitignore` and should not be committed to the repository.
-- Once indices are built, set `IRConfig.db_root_path = "benchmark"` and `IRConfig.data_mode = "dev"` to enable IR in the pipeline.
+- Once indices are built, set `IRConfig.db_root_path = "./data"` and `IRConfig.data_mode = "dev"` to enable IR in the pipeline.

@@ -112,7 +112,7 @@ model/                      # Data structures, progressive executor, reward mode
 pipeline/                   # Main orchestrator (stage-specific LLM clients)
 scripts/                    # Runner + IR evaluation utilities
 utils/                      # LLM client (OpenAI, HF inference, etc.)
-benchmark/                  # (local) BIRD/Spider2 datasets + indices (ignored by Git)
+data/                       # (local) BIRD/Spider2 datasets + indices (ignored by Git)
 ```
 
 ## IR Evaluation Scripts
@@ -126,7 +126,7 @@ See `docs/IR_EVAL_SP2.md` and `docs/IR_EVAL_STRICT_LENIENT.md` for methodology.
 
 ## Notes
 
-- Benchmark archives (`benchmark/bird.zip`, `benchmark/Spider2.zip`) are ignored by Git. See `docs/BENCHMARK_INVENTORY.md` for expected layout and CHESS preprocessing instructions.
+- Benchmark archives (`data/bird.zip`, `data/Spider2.zip`) are ignored by Git. See `docs/BENCHMARK_INVENTORY.md` for expected layout and CHESS preprocessing instructions.
 - IR integration details (imported vs implemented) are summarised in `docs/IR_INTEGRATION.md`.
 - Templates/Parsers sourced from CHESS are catalogued in `docs/CHESS_TEMPLATES.md`.
 

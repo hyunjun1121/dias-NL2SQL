@@ -94,7 +94,7 @@ def context_coverage(descriptions: Any, gold_pairs: Set[Tuple[str, str]]) -> flo
 def main():
     ap = argparse.ArgumentParser(description="IR value/context support evaluation (Spider 2.0)")
     ap.add_argument("--spider_json", type=str, required=True)
-    ap.add_argument("--db_root_path", type=str, default="benchmark")
+    ap.add_argument("--db_root_path", type=str, default="./data")
     ap.add_argument("--mode", type=str, default="dev")
     ap.add_argument("--output", type=str, default="results/ir_eval_value_context.json")
     ap.add_argument("--limit", type=int, default=0)

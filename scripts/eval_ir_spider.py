@@ -8,7 +8,7 @@ dataset if present; otherwise, they are extracted from the gold SQL using sqlglo
 Usage (example):
   python scripts/eval_ir_spider.py \
     --spider_json "<path>/dev.json" \
-    --db_root_path "benchmark" \
+    --db_root_path "./data" \
     --mode dev \
     --output ir_eval_spider_dev.json \
     --limit 200
@@ -71,7 +71,7 @@ def evaluate_table_retrieval(
 def main():
     ap = argparse.ArgumentParser(description="Evaluate IR table retrieval on Spider 2.0")
     ap.add_argument("--spider_json", type=str, required=True, help="Path to Spider 2.0 split JSON (e.g., dev.json)")
-    ap.add_argument("--db_root_path", type=str, default="benchmark", help="DB root in CHESS layout")
+    ap.add_argument("--db_root_path", type=str, default="./data", help="DB root in CHESS layout")
     ap.add_argument("--mode", type=str, default="dev", help="Data mode (dev/test/train)")
     ap.add_argument("--output", type=str, default="ir_eval_spider.json", help="Output JSON path for results")
     ap.add_argument("--limit", type=int, default=0, help="Optional limit on number of samples")

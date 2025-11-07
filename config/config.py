@@ -139,7 +139,7 @@ class IRConfig:
     """Configuration for CHESS-style Information Retriever integration."""
 
     enabled: bool = True
-    db_root_path: Optional[str] = "benchmark"
+    db_root_path: Optional[str] = "./data"
     data_mode: str = "dev"
 
     extract_keywords_template: str = "extract_keywords"

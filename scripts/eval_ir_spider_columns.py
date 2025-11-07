@@ -10,7 +10,7 @@ parsing helpers (get_sql_columns_dict, get_sql_tables) and the database schema.
 Usage example:
   python scripts/eval_ir_spider_columns.py \
     --spider_json "<path>/dev.json" \
-    --db_root_path "benchmark" \
+    --db_root_path "./data" \
     --mode dev \
     --output results/ir_eval_spider_columns_dev.json \
     --limit 200
@@ -176,7 +176,7 @@ def evaluate_pairs(gold: Set[Tuple[str, str]], ret: Set[Tuple[str, str]]) -> Tup
 def main():
     ap = argparse.ArgumentParser(description="Evaluate IR column retrieval on Spider 2.0")
     ap.add_argument("--spider_json", type=str, required=True)
-    ap.add_argument("--db_root_path", type=str, default="benchmark")
+    ap.add_argument("--db_root_path", type=str, default="./data")
     ap.add_argument("--mode", type=str, default="dev")
     ap.add_argument("--output", type=str, default="results/ir_eval_spider_columns.json")
     ap.add_argument("--limit", type=int, default=0)

@@ -1,1 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+*.egg-info/
+dist/
+build/
 
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Data files
+data/
+*.sqlite
+*.db
+*.csv
+*.json
+*.pkl
+*.tar.gz
+*.zip
+
+# Logs
+logs/
+*.log
+debug_logs_*/
+
+# Model files
+models/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+
+# Cache
+.cache/
+*_cache/
+huggingface_cache/
+
+# OS
+.DS_Store
+Thumbs.db
+__MACOSX/
+
+# Environment
+.env
+*.env
+
+# Results
+results/
+outputs/
+simple_test_*.json
